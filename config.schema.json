@@ -1,15 +1,46 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "MillLocalPlatform",
   "pluginType": "platform",
   "singular": true,
   "schema": {
-    "type": "object",
+    "type": "object", 
     "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "required": true,
-        "default": "Example Dynamic Platform"
+      "devices": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name of heater",
+              "type": "string",
+              "required": true
+            },
+            "ip": {
+              "title": "IP of heater",
+              "type": "string",
+              "required": true,
+              "description": "Local IP address"
+            }
+          }
+        }
+      },
+      "minStep": {
+        "title": "Temperature steps",
+        "type": "number",
+        "minimum": 0.1,
+        "default": 1
+      },
+      "minTemp": {
+        "title": "Minimum temperature",
+        "type": "number",
+        "minimum": 0,
+        "default": 0
+      },
+      "maxTemp": {
+        "title": "Maximum temperature",
+        "type": "number",
+        "minimum": 0,
+        "default": 35
       }
     }
   }
