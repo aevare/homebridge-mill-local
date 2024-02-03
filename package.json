@@ -1,8 +1,7 @@
 {
-  "private": true,
   "displayName": "Mill local",
   "name": "homebridge-mill-local",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Homebridge local connection to Mill heaters",
   "license": "Apache-2.0",
   "repository": {
@@ -24,12 +23,10 @@
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "mill",
+    "mill-local"
   ],
-  "dependencies": {
-    "node-fetch": "^3.3.2",
-    "unfetch": "^5.0.0"
-  },
   "devDependencies": {
     "@types/node": "^18.16.20",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
@@ -40,5 +37,12 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "dependencies": {
+    "whatwg-fetch": "^3.6.20"
   }
 }

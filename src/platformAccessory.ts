@@ -1,5 +1,5 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
-import MillDevice, { IDevice } from './device';
+import { IDevice } from './device';
 
 import { MillLocalPlatform } from './platform';
 
@@ -9,39 +9,48 @@ export class MillPlatformAccessory {
   constructor(
     private readonly platform: MillLocalPlatform,
     private readonly accessory: PlatformAccessory,
-    private readonly device: IDevice
+    private readonly device: IDevice,
   ) {
     const { Characteristic } = this.platform;
     // set accessory information
-    this.accessory.getService(this.platform.Service.AccessoryInformation)!
+    this.accessory
+      .getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(Characteristic.Manufacturer, 'mill')
-      .setCharacteristic(Characteristic.Model, "Mill HeaterGen3Panel")
+      .setCharacteristic(Characteristic.Model, 'Mill HeaterGen3Panel')
       .setCharacteristic(Characteristic.SerialNumber, this.device.ID);
 
-    this.service = this.accessory.getService(this.platform.Service.HeaterCooler) || this.accessory.addService(this.platform.Service.HeaterCooler);
+    this.service =
+      this.accessory.getService(this.platform.Service.HeaterCooler) ||
+      this.accessory.addService(this.platform.Service.HeaterCooler);
 
-    this.service.setCharacteristic(Characteristic.Name, accessory.context.device.Name);
+    this.service.setCharacteristic(
+      Characteristic.Name,
+      accessory.context.device.Name,
+    );
 
-  
     // create handlers for required characteristics
-    this.service.getCharacteristic(Characteristic.Active)
+    this.service
+      .getCharacteristic(Characteristic.Active)
       .onGet(this.handleActiveGet.bind(this))
       .onSet(this.handleActiveSet.bind(this));
 
-    this.service.getCharacteristic(Characteristic.CurrentHeaterCoolerState)
+    this.service
+      .getCharacteristic(Characteristic.CurrentHeaterCoolerState)
       .onGet(this.handleCurrentHeaterCoolerStateGet.bind(this));
 
-    this.service.getCharacteristic(Characteristic.TargetHeaterCoolerState)
+    this.service
+      .getCharacteristic(Characteristic.TargetHeaterCoolerState)
       .onGet(this.handleTargetHeaterCoolerStateGet.bind(this))
       .onSet(this.handleTargetHeaterCoolerStateSet.bind(this));
 
-    this.service.getCharacteristic(Characteristic.CurrentTemperature)
+    this.service
+      .getCharacteristic(Characteristic.CurrentTemperature)
       .onGet(this.handleCurrentTemperatureGet.bind(this));
 
-    this.service.getCharacteristic(Characteristic.HeatingThresholdTemperature)
+    this.service
+      .getCharacteristic(Characteristic.HeatingThresholdTemperature)
       .onGet(this.handleHeatingThresholdTemperatureGet.bind(this))
       .onSet(this.hadleHeatingThresholdTemperatureSet.bind(this));
-
   }
 
   async handleActiveGet(): Promise<CharacteristicValue> {
@@ -52,7 +61,7 @@ export class MillPlatformAccessory {
     return isActive;
   }
 
-  async handleActiveSet(value: CharacteristicValue){
+  async handleActiveSet(value: CharacteristicValue) {
     this.device.setOn(value as boolean);
 
     this.platform.log.debug('Set Characteristic Active ->', value);
@@ -75,7 +84,10 @@ export class MillPlatformAccessory {
       currentState = State.HEATING;
     }
 
-    this.platform.log.debug('Get Characteristic HeaterCoolerState ->', currentState);
+    this.platform.log.debug(
+      'Get Characteristic HeaterCoolerState ->',
+      currentState,
+    );
 
     return currentState;
   }
@@ -85,15 +97,16 @@ export class MillPlatformAccessory {
       AUTO: this.platform.Characteristic.TargetHeaterCoolerState.AUTO,
       HEAT: this.platform.Characteristic.TargetHeaterCoolerState.HEAT,
     };
-    let currentState = State.HEAT;
+    const currentState = State.HEAT;
 
-    this.platform.log.debug(`getting TargetHeaterCoolerState ${currentState}`);
+    this.platform.log.debug(`Get TargetHeaterCoolerState ${currentState}`);
 
     return currentState;
   }
 
-  async handleTargetHeaterCoolerStateSet(value: CharacteristicValue){
+  async handleTargetHeaterCoolerStateSet(value: CharacteristicValue) {
     // There is no auto in this case..
+    this.platform.log.debug(`Set TargetHeaterCoolerState ${value}`);
   }
 
   async handleCurrentTemperatureGet(): Promise<CharacteristicValue> {
@@ -111,7 +124,10 @@ export class MillPlatformAccessory {
 
     const targetTemp = this.device.TargetTemperature;
 
-    this.platform.log.debug('Get Characteristic ThresholdTemperature ->', targetTemp);
+    this.platform.log.debug(
+      'Get Characteristic ThresholdTemperature ->',
+      targetTemp,
+    );
 
     return targetTemp;
   }
@@ -119,7 +135,9 @@ export class MillPlatformAccessory {
   async hadleHeatingThresholdTemperatureSet(value: CharacteristicValue) {
     this.device.setTargetTemperature(value as number);
 
-    this.platform.log.debug('Set Characteristic ThresholdTemperature ->', value);
+    this.platform.log.debug(
+      'Set Characteristic ThresholdTemperature ->',
+      value,
+    );
   }
-
 }

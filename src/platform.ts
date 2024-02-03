@@ -1,15 +1,22 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
+import {
+  API,
+  DynamicPlatformPlugin,
+  Logger,
+  PlatformAccessory,
+  PlatformConfig,
+  Service,
+  Characteristic,
+} from 'homebridge';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { MillPlatformAccessory } from './platformAccessory';
 import MillDevice from './device';
 
-
 export interface MillLocalConfig extends PlatformConfig {
   devices: {
     name: string;
     ip: string;
-  }[],
+  }[];
   minStep: number;
   minTemp: number;
   maxTemp: number;
@@ -17,7 +24,8 @@ export interface MillLocalConfig extends PlatformConfig {
 
 export class MillLocalPlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
-  public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
+  public readonly Characteristic: typeof Characteristic =
+    this.api.hap.Characteristic;
 
   // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
@@ -52,7 +60,9 @@ export class MillLocalPlatform implements DynamicPlatformPlugin {
   }
 
   async discoverDevices() {
-    const devices = (this.config as MillLocalConfig).devices.map(({name, ip}) => new MillDevice(name, ip));
+    const devices = (this.config as MillLocalConfig).devices.map(
+      ({ name, ip }) => new MillDevice(name, ip, this.log),
+    );
 
     await Promise.allSettled(devices.map((device) => device.init()));
 
@@ -60,10 +70,15 @@ export class MillLocalPlatform implements DynamicPlatformPlugin {
 
     for (const device of onlineDevices) {
       const uuid = this.api.hap.uuid.generate(device.ID);
-      const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
+      const existingAccessory = this.accessories.find(
+        (accessory) => accessory.UUID === uuid,
+      );
 
       if (existingAccessory) {
-        this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
+        this.log.info(
+          'Restoring existing accessory from cache:',
+          existingAccessory.displayName,
+        );
 
         new MillPlatformAccessory(this, existingAccessory, device);
         // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
@@ -85,7 +100,9 @@ export class MillLocalPlatform implements DynamicPlatformPlugin {
         new MillPlatformAccessory(this, accessory, device);
 
         // link the accessory to your platform
-        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
+          accessory,
+        ]);
       }
     }
   }
